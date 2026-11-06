@@ -1,0 +1,93 @@
+name: Release
+
+# v3.0.1 gibi bir etiket gönderildiğinde: Windows / macOS / Linux için tek dosyalık
+# programlar derlenir, test edilir ve GitHub Release'e eklenir.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: build (${{ matrix.asset }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            asset: videograbber-windows-x64.exe
+            binary: dist/videograbber.exe
+          - os: macos-latest
+            asset: videograbber-macos-arm64
+            binary: dist/videograbber
+          - os: ubuntu-22.04
+            asset: videograbber-linux-x64
+            binary: dist/videograbber
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ".[dev]"
+      - name: Build
+        run: python scripts/build_exe.py
+      - name: Smoke test
+        shell: bash
+        run: |
+          ${{ matrix.binary }} --version
+          ${{ matrix.binary }} doctor
+      - name: Rename
+        shell: bash
+        run: mv "${{ matrix.binary }}" "dist/${{ matrix.asset }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset }}
+          path: dist/${{ matrix.asset }}
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: assets
+          merge-multiple: true
+      - name: Checksums
+        run: cd assets && sha256sum * > SHA256SUMS.txt
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: assets/*
+          generate_release_notes: true
+          body: |
+            ## 📥 İndir / Download
+            | Sistem | Dosya |
+            | --- | --- |
+            | Windows | `videograbber-windows-x64.exe` |
+            | macOS (Apple Silicon) | `videograbber-macos-arm64` |
+            | Linux | `videograbber-linux-x64` |
+
+            Ayrıntılar için [CHANGELOG](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md).
+
+  pypi:
+    # PyPI'ye yayınlamak için: PyPI'de "trusted publisher" tanımla ve repo değişkeni
+    # PUBLISH_TO_PYPI=true ayarla (Settings → Secrets and variables → Actions → Variables).
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v') && vars.PUBLISH_TO_PYPI == 'true'
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv build
+      - uses: pypa/gh-action-pypi-publish@release/v1
