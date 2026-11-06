@@ -34,6 +34,8 @@ dependencies = [
     "platformdirs>=4.2",
     "imageio-ffmpeg>=0.5",
     "tomli>=2.0; python_version < '3.11'",
+    # Masaüstü penceresi (Linux'ta GTK/Qt gerektirdiği için isteğe bağlı: [gui] ekstrası).
+    "pywebview>=5.3; sys_platform == 'win32' or sys_platform == 'darwin'",
 ]
 
 [project.optional-dependencies]

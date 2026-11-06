@@ -39,6 +39,9 @@ class ProgressEvent:
     item_index: int | None = None
     item_count: int | None = None
     message: str | None = None
+    thumbnail: str | None = None
+    uploader: str | None = None
+    duration: float | None = None
 
     @property
     def fraction(self) -> float | None:
@@ -226,11 +229,16 @@ class VideoGrabber:
             "count": None,
             "is_playlist": False,
             "downloaded_any": False,
+            "thumbnail": None,
+            "uploader": None,
+            "duration": None,
         }
 
         def event(status: str, **kw: Any) -> None:
             kw.setdefault("title", state["title"])
             kw.setdefault("item_count", state["count"])
+            for key in ("thumbnail", "uploader", "duration"):
+                kw.setdefault(key, state[key])
             self._emit(ProgressEvent(task_id, url, status, platform, **kw))
 
         def progress_hook(d: dict[str, Any]) -> None:
@@ -239,6 +247,8 @@ class VideoGrabber:
             info = d.get("info_dict") or {}
             if d.get("status") == "downloading":
                 state["downloaded_any"] = True
+                if not state["thumbnail"]:
+                    state["thumbnail"] = _pick_thumbnail(info)
                 phase = None
                 if info.get("vcodec") == "none":
                     phase = "audio"
@@ -291,6 +301,9 @@ class VideoGrabber:
                         state["is_playlist"] = True
                         state["count"] = info.get("playlist_count")
                     state["title"] = info.get("title")
+                    state["thumbnail"] = _pick_thumbnail(info)
+                    state["uploader"] = info.get("uploader") or info.get("channel")
+                    state["duration"] = info.get("duration")
                     result.title = state["title"]
                     event("extracting")
                     ydl.process_ie_result(info, download=True)
@@ -369,6 +382,22 @@ class VideoGrabber:
             )
             for r, u in zip(results, url_list, strict=True)
         ]
+
+
+def _pick_thumbnail(info: dict[str, Any]) -> str | None:
+    """Kart görünümü için makul boyutta bir kapak resmi URL'si seçer."""
+    if info.get("extractor_key") == "Youtube" and info.get("id"):
+        return f"https://i.ytimg.com/vi/{info['id']}/hqdefault.jpg"
+    if info.get("thumbnail"):
+        return info["thumbnail"]
+    thumbs = [t for t in info.get("thumbnails") or [] if t.get("url")]
+    if not thumbs:
+        entries = info.get("entries")
+        if isinstance(entries, list) and entries and isinstance(entries[0], dict):
+            return _pick_thumbnail(entries[0])
+        return None
+    sized = [t for t in thumbs if (t.get("width") or 0) >= 320]
+    return (sized[0] if sized else thumbs[-1])["url"]
 
 
 def _files_label(files: list[Path]) -> str | None:

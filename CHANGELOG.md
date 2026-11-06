@@ -2,6 +2,19 @@
 
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/), sürümleme [SemVer](https://semver.org/lang/tr/) kurallarına uyar.
 
+## [3.1.0] — 2026-11-06
+
+### Eklenenler
+- 🖥️ **Masaüstü penceresi**: link yapıştır, Video/Ses ve kalite seç, İndir. Kapak resimli indirme kartları,
+  canlı ilerleme, iptal / tekrar dene, tek tıkla oynat ve klasörde göster, koyu & açık tema, sürükle-bırak.
+- Giriş isteyen siteler için pencereden tarayıcı seçimi ve buna göre yönlendiren hata mesajları
+- `videograbber gui` (`--web` ile tarayıcıda) ve `videograbber wizard` komutları
+- Uygulama ikonu; `doctor` komutunda arayüz kontrolü
+
+### Değişenler
+- Argümansız çalıştırma (ve exe'ye çift tıklama) artık terminal sihirbazı yerine pencereyi açar.
+  Sihirbaz `videograbber wizard` ile kullanılabilir.
+
 ## [3.0.0] — 2026-11-06
 
 İlk açık kaynak sürüm — sıfırdan yeniden yazıldı.
@@ -21,4 +34,5 @@ Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/), sürümleme 
 - ffmpeg ve deno (JS motoru) pakete dahil — ek kurulum yok
 - Windows / macOS / Linux için tek dosyalık programlar (GitHub Releases)
 
+[3.1.0]: https://github.com/yusufkrk/sever-videograbber/releases/tag/v3.1.0
 [3.0.0]: https://github.com/yusufkrk/sever-videograbber/releases/tag/v3.0.0

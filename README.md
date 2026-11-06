@@ -1,8 +1,10 @@
 <div align="center">
 
-# 🎬 Sever VideoGrabber v3.0
+<img src="assets/icon.png" width="96" alt="">
 
-**YouTube, Instagram, X/Twitter, TikTok ve 1000+ siteden tek komutla video & ses indir.**
+# Sever VideoGrabber v3.1
+
+**YouTube, Instagram, X/Twitter, TikTok ve 1000+ siteden tek tıkla video & ses indir.**
 
 [![CI](https://github.com/yusufkrk/sever-videograbber/actions/workflows/ci.yml/badge.svg)](https://github.com/yusufkrk/sever-videograbber/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/yusufkrk/sever-videograbber?color=ff5b4a)](https://github.com/yusufkrk/sever-videograbber/releases/latest)
@@ -14,12 +16,15 @@
 
 </div>
 
-```
- ___ _____   _____ ___  __   ___    _          ___          _    _
-/ __| __\ \ / / __| _ \ \ \ / (_)__| |___ ___ / __|_ _ __ _| |__| |__  ___ _ _
-\__ \ _| \ V /| _||   /  \ V /| / _` / -_) _ \ (_ | '_/ _` | '_ \ '_ \/ -_) '_|
-|___/___| \_/ |___|_|_\   \_/ |_\__,_\___\___/\___|_| \__,_|_.__/_.__/\___|_|
-```
+<p align="center"><img src="assets/screenshot.png" width="820" alt="Sever VideoGrabber penceresi"></p>
+
+## 🚀 Hızlı başlangıç
+
+1. [**Releases**](https://github.com/yusufkrk/sever-videograbber/releases/latest) sayfasından **`videograbber-windows-x64.exe`** dosyasını indir.
+2. Çift tıkla → pencere açılır.
+3. Linki yapıştır, **Video** ya da **Ses** seç, **İndir**'e bas. Bitince **Oynat** ya da **Klasörde göster**. 🎉
+
+Kurulum yok, terminal yok. Dosyalar `İndirilenler\Sever VideoGrabber` klasörüne iner.
 
 ## ✨ Özellikler
 
@@ -32,7 +37,8 @@
 - 💬 **Altyazılar** — istediğin dillerde, videonun içine gömülü
 - 🔐 **Giriş isteyen siteler** — tarayıcındaki oturumu kullan: `--browser chrome`
 - 🧠 **Anlaşılır hata mesajları** — "bot doğrulaması", "gizli video", "giriş gerekli" gibi durumları açıklar ve çözüm önerir
-- 🪄 **Etkileşimli mod** — terminal bilmeyenler için adım adım sihirbaz (exe'ye çift tıkla, linki yapıştır)
+- 🖥️ **Modern masaüstü penceresi** — link yapıştır, kapak resimli kartlarda ilerlemeyi izle, tek tıkla oynat; koyu & açık tema
+- 💻 **Güçlü komut satırı** — betikler ve ileri düzey kullanıcılar için tüm özellikler `videograbber` komutunda
 - 📦 **Kurulum gerektirmez** — ffmpeg ve JavaScript motoru (deno) pakete dahil
 - 🌐 **Türkçe & English** arayüz · ⚙️ ayar dosyası · 🗂️ arşiv (indirilenleri atla) · 🤖 betikler için `--json` çıktı · 🐍 Python kütüphanesi olarak kullanılabilir
 
@@ -48,7 +54,7 @@
 | macOS (Apple Silicon) | `videograbber-macos-arm64` |
 | Linux | `videograbber-linux-x64` |
 
-Windows'ta `.exe`'ye **çift tıkla** → etkileşimli mod açılır, linki yapıştır, bitti. 🎉
+Windows'ta `.exe`'ye **çift tıkla** → pencere açılır, linki yapıştır, bitti. 🎉 Aynı exe komut satırından da çalışır (`videograbber-windows-x64.exe https://...`).
 
 > **Not:** Program imzasız olduğu için Windows SmartScreen "Windows bilgisayarınızı korudu" uyarısı gösterebilir → **Ek bilgi → Yine de çalıştır**. macOS/Linux'ta önce `chmod +x videograbber-*` çalıştır.
 
@@ -70,13 +76,13 @@ veya
 pip install "git+https://github.com/yusufkrk/sever-videograbber.git"
 ```
 
-Kurulumdan sonra `videograbber` (kısa adı: `vgrab`) komutu kullanılabilir. Her şeyin hazır olduğunu kontrol et:
+Kurulumdan sonra `videograbber` (kısa adı: `vgrab`) komutu kullanılabilir. Argümansız çalıştırınca pencere açılır. Her şeyin hazır olduğunu kontrol et:
 
 ```bash
 videograbber doctor
 ```
 
-## 🚀 Kullanım
+## 💻 Komut satırı (ileri düzey)
 
 ```bash
 # En iyi kalitede video
@@ -106,8 +112,9 @@ videograbber -s tr,en https://youtu.be/xxxx
 # İndirmeden bilgi ve formatları gör
 videograbber info --formats https://youtu.be/xxxx
 
-# Etkileşimli mod
-videograbber
+# Masaüstü penceresi / terminal sihirbazı
+videograbber            # veya: videograbber gui
+videograbber wizard
 ```
 
 ### Tüm seçenekler
@@ -137,7 +144,7 @@ videograbber
 | `--lang tr\|en` | Arayüz dili |
 | `-v, --verbose` / `--quiet` | Ayrıntılı günlük / sessiz mod |
 
-Komutlar: `download` (varsayılan), `info`, `doctor`, `config`. Her komut için `videograbber <komut> --help`.
+Komutlar: `download` (varsayılan), `info`, `doctor`, `config`, `gui` (`--web` ile tarayıcıda), `wizard`. Her komut için `videograbber <komut> --help`.
 
 ## ⚙️ Ayar dosyası
 
@@ -246,7 +253,7 @@ Hata bildirimi, öneri ve pull request'ler memnuniyetle karşılanır! Bkz. [CON
 
 ## 🇬🇧 English
 
-**Sever VideoGrabber v3.0** downloads video & audio from YouTube, Instagram, X/Twitter, TikTok and 1000+ other sites — with a polished terminal UI, an interactive wizard for non-technical users, and zero external setup (ffmpeg and a JS runtime are bundled).
+**Sever VideoGrabber v3.1** downloads video & audio from YouTube, Instagram, X/Twitter, TikTok and 1000+ other sites — with a modern desktop window (paste a link, pick Video or Audio, hit Download), a full-featured command line, and zero external setup (ffmpeg and a JS runtime are bundled).
 
 **Install:** grab a ready-made binary from [Releases](https://github.com/yusufkrk/sever-videograbber/releases/latest), or:
 
@@ -264,7 +271,7 @@ videograbber -p -j 3 PLAYLIST_URL                       # whole playlist, 3 in p
 videograbber --browser firefox INSTAGRAM_URL            # sites that need login
 videograbber info --formats URL                         # inspect without downloading
 videograbber doctor                                     # check your setup
-videograbber                                            # interactive mode
+videograbber                                            # desktop window
 ```
 
 The interface language follows your system locale; force it with `--lang en`, `VIDEOGRABBER_LANG=en` or `lang = "en"` in the config file. See the options table above (flags are the same in every language) and `videograbber --help`.

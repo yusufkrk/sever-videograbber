@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import platform as _platform
 import sys
 import time
@@ -29,13 +30,13 @@ from .platforms import dedupe, normalize_url, read_url_file
 from .tools import find_ffmpeg, find_js_runtime
 from .ui import ProgressUI, console, err_console, print_banner, print_info, print_settings, print_summary
 
-COMMANDS = ("download", "info", "doctor", "config")
+COMMANDS = ("download", "info", "doctor", "config", "gui", "wizard")
 EXIT_OK, EXIT_FAIL, EXIT_USAGE, EXIT_INTERRUPT = 0, 1, 2, 130
 
 _HELP: dict[str, dict[str, str]] = {
     "tr": {
         "desc": "Sever VideoGrabber v3 — YouTube, Instagram, X/Twitter, TikTok ve 1000+ siteden "
-        "video & ses indir. Argümansız çalıştırılırsa etkileşimli mod açılır.",
+        "video & ses indir. Argümansız çalıştırılırsa masaüstü penceresi açılır.",
         "epilog": "Örnekler:\n"
         "  videograbber https://youtu.be/dQw4w9WgXcQ\n"
         "  videograbber -q 720 URL1 URL2\n"
@@ -49,6 +50,9 @@ _HELP: dict[str, dict[str, str]] = {
         "cmd_info": "indirmeden bilgi göster",
         "cmd_doctor": "sistem kontrolü (ffmpeg, JS motoru, sürümler)",
         "cmd_config": "ayar dosyasını yönet",
+        "cmd_gui": "masaüstü penceresini aç (argümansız çalıştırmayla aynı)",
+        "cmd_wizard": "terminalde adım adım sihirbaz",
+        "gui_web": "pencere yerine varsayılan tarayıcıda aç",
         "urls": "indirilecek link(ler); '-' stdin'den okur",
         "g_output": "Çıktı",
         "g_format": "Format & kalite",
@@ -92,7 +96,7 @@ _HELP: dict[str, dict[str, str]] = {
     },
     "en": {
         "desc": "Sever VideoGrabber v3 — download video & audio from YouTube, Instagram, X/Twitter, "
-        "TikTok and 1000+ sites. Run without arguments for interactive mode.",
+        "TikTok and 1000+ sites. Run without arguments to open the desktop window.",
         "epilog": "Examples:\n"
         "  videograbber https://youtu.be/dQw4w9WgXcQ\n"
         "  videograbber -q 720 URL1 URL2\n"
@@ -106,6 +110,9 @@ _HELP: dict[str, dict[str, str]] = {
         "cmd_info": "show info without downloading",
         "cmd_doctor": "system check (ffmpeg, JS runtime, versions)",
         "cmd_config": "manage the config file",
+        "cmd_gui": "open the desktop window (same as running without arguments)",
+        "cmd_wizard": "step-by-step wizard in the terminal",
+        "gui_web": "open in your default browser instead of a window",
         "urls": "link(s) to download; '-' reads from stdin",
         "g_output": "Output",
         "g_format": "Format & quality",
@@ -189,7 +196,7 @@ def build_parser() -> argparse.ArgumentParser:
         "-V", "--version", action="version", version=f"Sever VideoGrabber {__version__}", help=_h("version")
     )
     parser.add_argument("-h", "--help", action="help", help=_h("help"))
-    sub = parser.add_subparsers(dest="command", metavar="{download,info,doctor,config}")
+    sub = parser.add_subparsers(dest="command", metavar="{download,info,doctor,config,gui,wizard}")
 
     # download --------------------------------------------------------------
     d = sub.add_parser(
@@ -270,6 +277,14 @@ def build_parser() -> argparse.ArgumentParser:
     mx.add_argument("--show", action="store_true", help=_h("c_show"))
     c.add_argument("--force", action="store_true", help=_h("c_force"))
     _common(c)
+
+    # gui / wizard ----------------------------------------------------------
+    gp = sub.add_parser("gui", help=_h("cmd_gui"), add_help=False)
+    gp.add_argument("--web", action="store_true", help=_h("gui_web"))
+    gp.add_argument("--selftest", action="store_true", help=argparse.SUPPRESS)
+    _common(gp)
+    wz = sub.add_parser("wizard", help=_h("cmd_wizard"), add_help=False)
+    _common(wz)
     return parser
 
 
@@ -485,6 +500,22 @@ def cmd_doctor(args: argparse.Namespace, conf: dict[str, Any]) -> int:
         escape(js.path or ""),
     )
     config_file = cfg.config_path()
+    try:
+        from importlib.metadata import version as _pkg_version
+
+        import webview  # noqa: F401
+
+        table.add_row("✅", "GUI: pywebview", _pkg_version("pywebview"), "")
+    except Exception:
+        table.add_row("ℹ️", "GUI: pywebview", "—", t("doctor_gui_browser"))
+    gui_failed = False
+    if os.environ.get("CI") == "true" and getattr(sys, "frozen", False) and sys.platform == "win32":
+        # GitHub Actions'ta derlenen Windows exe'sinde pencereyi gerçekten açıp dener.
+        from .gui import selftest
+
+        ok, msg = selftest()
+        gui_failed = not ok
+        table.add_row("✅" if ok else "❌", "GUI selftest", "", escape(msg))
     table.add_row("📄", "config", "✓" if config_file.exists() else "—", escape(str(config_file)))
     try:
         out_dir = build_options(
@@ -503,6 +534,8 @@ def cmd_doctor(args: argparse.Namespace, conf: dict[str, Any]) -> int:
         console.print(f"[yellow]⚠ {t('doctor_missing_js')}[/]")
     if not ytdlp_ok:
         console.print("[yellow]⚠ yt-dlp:[/] pip install -U yt-dlp")
+    if gui_failed:
+        problems += 1
     if not problems:
         console.print(f"[green]✔ {t('doctor_ok')}[/]")
     return EXIT_OK if not problems else EXIT_FAIL
@@ -527,6 +560,27 @@ def cmd_config(args: argparse.Namespace, conf: dict[str, Any]) -> int:
     return EXIT_OK
 
 
+def cmd_gui(args: argparse.Namespace, conf: dict[str, Any]) -> int:
+    try:
+        from .gui import run_gui
+    except Exception as exc:  # pragma: no cover - bozuk kurulum
+        err_console.print(f"[yellow]⚠ GUI: {escape(str(exc))}[/]")
+        return cmd_wizard(args, conf)
+    if getattr(args, "selftest", False):
+        from .gui import selftest
+
+        ok, msg = selftest()
+        print(("OK " if ok else "FAIL ") + msg)
+        return EXIT_OK if ok else EXIT_FAIL
+    return run_gui(conf, force_browser=bool(getattr(args, "web", False)))
+
+
+def cmd_wizard(args: argparse.Namespace, conf: dict[str, Any]) -> int:
+    from .interactive import run_interactive
+
+    return run_interactive(conf)
+
+
 # ----------------------------------------------------------------------- giriş noktası
 
 
@@ -537,9 +591,7 @@ def main(argv: list[str] | None = None) -> int:
     set_language(_prescan_lang(argv) or conf.get("lang"))
 
     if not argv:
-        from .interactive import run_interactive
-
-        return run_interactive(conf)
+        return cmd_gui(argparse.Namespace(web=False), conf)
 
     if argv[0] not in COMMANDS and argv[0] not in ("-h", "--help", "-V", "--version"):
         argv.insert(0, "download")
@@ -550,9 +602,14 @@ def main(argv: list[str] | None = None) -> int:
         parser.print_help()
         return EXIT_USAGE
 
-    handler = {"download": cmd_download, "info": cmd_info, "doctor": cmd_doctor, "config": cmd_config}[
-        args.command
-    ]
+    handler = {
+        "download": cmd_download,
+        "info": cmd_info,
+        "doctor": cmd_doctor,
+        "config": cmd_config,
+        "gui": cmd_gui,
+        "wizard": cmd_wizard,
+    }[args.command]
     try:
         return handler(args, conf)
     except KeyboardInterrupt:
