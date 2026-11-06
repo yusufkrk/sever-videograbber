@@ -1,7 +1,8 @@
 name: Release
 
-# v3.0.1 gibi bir etiket gönderildiğinde: Windows / macOS / Linux için tek dosyalık
-# programlar derlenir, test edilir ve GitHub Release'e eklenir.
+# v3.2.0 gibi bir etiket gönderildiğinde: Windows, macOS (Apple Silicon + Intel) ve Linux
+# için kurulum gerektirmeyen programlar derlenir, pencereleri test edilir ve GitHub
+# Release'e eklenir.
 on:
   push:
     tags: ["v*"]
@@ -21,12 +22,23 @@ jobs:
           - os: windows-latest
             asset: videograbber-windows-x64.exe
             binary: dist/videograbber.exe
+            package: dist/videograbber.exe
+            gui_test: true
           - os: macos-latest
-            asset: videograbber-macos-arm64
-            binary: dist/videograbber
+            asset: SeverVideoGrabber-macos-apple-silicon.zip
+            binary: dist/Sever VideoGrabber.app/Contents/MacOS/Sever VideoGrabber
+            package: dist/SeverVideoGrabber.zip
+            gui_test: true
+          - os: macos-15-intel
+            asset: SeverVideoGrabber-macos-intel.zip
+            binary: dist/Sever VideoGrabber.app/Contents/MacOS/Sever VideoGrabber
+            package: dist/SeverVideoGrabber.zip
+            gui_test: true
           - os: ubuntu-22.04
             asset: videograbber-linux-x64
             binary: dist/videograbber
+            package: dist/videograbber
+            gui_test: false
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -41,41 +53,51 @@ jobs:
       - name: Smoke test
         shell: bash
         run: |
-          ${{ matrix.binary }} --version
-          ${{ matrix.binary }} doctor
-      - name: Rename
+          "${{ matrix.binary }}" --version
+          "${{ matrix.binary }}" doctor
+      - name: Window test
+        if: matrix.gui_test
         shell: bash
-        run: mv "${{ matrix.binary }}" "dist/${{ matrix.asset }}"
+        timeout-minutes: 3
+        run: '"${{ matrix.binary }}" gui --selftest'
+      - name: Collect
+        shell: bash
+        run: |
+          mkdir -p out
+          cp "${{ matrix.package }}" "out/${{ matrix.asset }}"
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.asset }}
-          path: dist/${{ matrix.asset }}
+          path: out/${{ matrix.asset }}
 
   release:
     needs: build
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          path: assets
+          path: release-files
           merge-multiple: true
       - name: Checksums
-        run: cd assets && sha256sum * > SHA256SUMS.txt
+        run: cd release-files && sha256sum * > SHA256SUMS.txt
       - uses: softprops/action-gh-release@v2
         with:
-          files: assets/*
+          files: release-files/*
           generate_release_notes: true
           body: |
             ## 📥 İndir / Download
             | Sistem | Dosya |
             | --- | --- |
-            | Windows | `videograbber-windows-x64.exe` |
-            | macOS (Apple Silicon) | `videograbber-macos-arm64` |
+            | Windows 10/11 | `videograbber-windows-x64.exe` → çift tıkla |
+            | macOS (M1/M2/M3/M4) | `SeverVideoGrabber-macos-apple-silicon.zip` → aç, uygulamayı Applications'a sürükle |
+            | macOS (Intel) | `SeverVideoGrabber-macos-intel.zip` |
             | Linux | `videograbber-linux-x64` |
 
-            Ayrıntılar için [CHANGELOG](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md).
+            **macOS ilk açılış:** Uygulama Apple tarafından imzalanmadığı için ilk açılışta uyarı çıkar →
+            **Sistem Ayarları → Gizlilik ve Güvenlik → "Yine de Aç"**. Ayrıntılar README'de.
+
+            Değişiklikler için [CHANGELOG](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md).
 
   pypi:
     # PyPI'ye yayınlamak için: PyPI'de "trusted publisher" tanımla ve repo değişkeni
