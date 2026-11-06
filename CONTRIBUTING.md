@@ -30,6 +30,7 @@ uvx ruff format src tests
 | `src/sever_videograbber/options.py` | `DownloadOptions` ve yt-dlp parametrelerine dönüşüm |
 | `src/sever_videograbber/cli.py` | Komut satırı arayüzü |
 | `src/sever_videograbber/interactive.py` | Etkileşimli sihirbaz |
+| `src/sever_videograbber/gui/` | Masaüstü penceresi: `server.py` (yerel API), `jobs.py` (kuyruk), `web/index.html` (arayüz) |
 | `src/sever_videograbber/ui.py` | Rich tabanlı terminal arayüzü |
 | `src/sever_videograbber/errors.py` | Hata sınıflandırma ve kullanıcı dostu mesajlar |
 | `src/sever_videograbber/i18n.py` | Türkçe / İngilizce mesajlar |

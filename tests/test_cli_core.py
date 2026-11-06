@@ -74,7 +74,9 @@ def test_invalid_quality_is_usage_error():
 def test_version(capsys):
     with pytest.raises(SystemExit):
         cli.main(["--version"])
-    assert "3.0.0" in capsys.readouterr().out
+    from sever_videograbber import __version__
+
+    assert __version__ in capsys.readouterr().out
 
 
 def test_config_init_and_path(capsys, tmp_path):
