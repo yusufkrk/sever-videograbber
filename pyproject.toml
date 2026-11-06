@@ -1,0 +1,72 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sever-videograbber"
+dynamic = ["version"]
+description = "Sever VideoGrabber v3.0 — YouTube, Instagram, X/Twitter, TikTok ve 1000+ siteden video & ses indirici."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+authors = [{ name = "yusufkrk" }]
+keywords = [
+    "video-downloader", "youtube-downloader", "instagram-downloader",
+    "twitter-downloader", "tiktok-downloader", "yt-dlp", "cli", "mp3",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Natural Language :: Turkish",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Internet :: WWW/HTTP",
+]
+dependencies = [
+    "yt-dlp[default,deno]>=2025.11.12",
+    "rich>=13.7",
+    "platformdirs>=4.2",
+    "imageio-ffmpeg>=0.5",
+    "tomli>=2.0; python_version < '3.11'",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6", "pyinstaller>=6.10"]
+
+[project.urls]
+Homepage = "https://github.com/yusufkrk/sever-videograbber"
+Issues = "https://github.com/yusufkrk/sever-videograbber/issues"
+Changelog = "https://github.com/yusufkrk/sever-videograbber/blob/main/CHANGELOG.md"
+
+[project.scripts]
+videograbber = "sever_videograbber.cli:main"
+vgrab = "sever_videograbber.cli:main"
+
+[tool.hatch.version]
+path = "src/sever_videograbber/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sever_videograbber"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["network: gerçek internet bağlantısı gerektiren testler (varsayılan olarak atlanır)"]
+addopts = "-m 'not network'"
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003", "SIM105"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/sever_videograbber/i18n.py" = ["E501"]
+"src/sever_videograbber/errors.py" = ["E501"]

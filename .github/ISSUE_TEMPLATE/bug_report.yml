@@ -1,0 +1,43 @@
+name: 🐞 Hata bildirimi / Bug report
+description: Bir şey çalışmıyor mu? Bize bildir.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Bildirmeden önce lütfen güncelle (`pipx upgrade sever-videograbber` / son Release) ve `videograbber doctor` çalıştır.
+        Site kaynaklı hatalar çoğu zaman yt-dlp güncellemesiyle düzelir.
+  - type: input
+    id: url
+    attributes:
+      label: Link / URL
+      description: Sorun yaşanan link (gizli/özel içerik paylaşma).
+    validations:
+      required: true
+  - type: input
+    id: command
+    attributes:
+      label: Çalıştırılan komut / Command
+      placeholder: videograbber -q 720 https://...
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: Ne oldu? / What happened?
+      description: Beklenen davranış ve gerçekleşen davranış.
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Ayrıntılı çıktı / Verbose output
+      description: Komutu `-v` ile çalıştırıp çıktıyı buraya yapıştır.
+      render: text
+  - type: textarea
+    id: doctor
+    attributes:
+      label: videograbber doctor
+      render: text
+    validations:
+      required: true

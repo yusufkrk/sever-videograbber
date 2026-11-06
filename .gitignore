@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Derleme
+build/
+dist/
+*.spec
+
+# İndirilenler / yerel dosyalar
+downloads/
+*.part
+*.ytdl
+cookies.txt
+linkler.txt
+links.txt
+
+# Editör / sistem
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
