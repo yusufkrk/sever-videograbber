@@ -20,11 +20,14 @@
 
 ## 🚀 Hızlı başlangıç
 
-1. [**Releases**](https://github.com/yusufkrk/sever-videograbber/releases/latest) sayfasından **`videograbber-windows-x64.exe`** dosyasını indir.
-2. Çift tıkla → pencere açılır.
+1. [**Releases**](https://github.com/yusufkrk/sever-videograbber/releases/latest) sayfasından bilgisayarına uygun dosyayı indir:
+   - **Windows:** `videograbber-windows-x64.exe`
+   - **Mac (M1/M2/M3/M4):** `SeverVideoGrabber-macos-apple-silicon.zip`
+   - **Mac (Intel):** `SeverVideoGrabber-macos-intel.zip`
+2. Windows'ta exe'ye **çift tıkla**. Mac'te zip'i aç, **Sever VideoGrabber**'ı *Uygulamalar* klasörüne sürükle ve çift tıkla ([ilk açılış](#-macte-ilk-açılış)).
 3. Linki yapıştır, **Video** ya da **Ses** seç, **İndir**'e bas. Bitince **Oynat** ya da **Klasörde göster**. 🎉
 
-Kurulum yok, terminal yok. Dosyalar `İndirilenler\Sever VideoGrabber` klasörüne iner.
+Kurulum yok, terminal yok. Dosyalar *İndirilenler/Sever VideoGrabber* klasörüne iner.
 
 ## ✨ Özellikler
 
@@ -50,13 +53,33 @@ Kurulum yok, terminal yok. Dosyalar `İndirilenler\Sever VideoGrabber` klasörü
 
 | Sistem | Dosya |
 | --- | --- |
-| Windows | `videograbber-windows-x64.exe` |
-| macOS (Apple Silicon) | `videograbber-macos-arm64` |
+| Windows 10/11 | `videograbber-windows-x64.exe` |
+| macOS 11+ (M1/M2/M3/M4) | `SeverVideoGrabber-macos-apple-silicon.zip` |
+| macOS 11+ (Intel) | `SeverVideoGrabber-macos-intel.zip` |
 | Linux | `videograbber-linux-x64` |
 
-Windows'ta `.exe`'ye **çift tıkla** → pencere açılır, linki yapıştır, bitti. 🎉 Aynı exe komut satırından da çalışır (`videograbber-windows-x64.exe https://...`).
+Hangi Mac'in olduğunu bilmiyorsan: sol üstteki **Apple menüsü → Bu Mac Hakkında** → "Çip: Apple M…" yazıyorsa *apple-silicon*, "İşlemci: Intel" yazıyorsa *intel*.
 
-> **Not:** Program imzasız olduğu için Windows SmartScreen "Windows bilgisayarınızı korudu" uyarısı gösterebilir → **Ek bilgi → Yine de çalıştır**. macOS/Linux'ta önce `chmod +x videograbber-*` çalıştır.
+**Windows:** `.exe`'ye **çift tıkla** → pencere açılır, linki yapıştır, bitti. 🎉 Program imzasız olduğu için SmartScreen "Windows bilgisayarınızı korudu" diyebilir → **Ek bilgi → Yine de çalıştır**. Aynı exe komut satırından da çalışır (`videograbber-windows-x64.exe https://...`).
+
+**Linux:** `chmod +x videograbber-linux-x64 && ./videograbber-linux-x64` — arayüz varsayılan tarayıcında açılır (pencere için `pip install pywebview[qt]`).
+
+### 🍎 Mac'te ilk açılış
+
+1. İndirdiğin `.zip`'e çift tıkla → **Sever VideoGrabber** uygulaması çıkar. Onu **Uygulamalar** (Applications) klasörüne sürükle.
+2. Uygulamaya çift tıkla. Uygulama Apple'a ücretli olarak onaylatılmadığı için macOS bir uyarı gösterir → **Bitti**'ye bas.
+3. **Sistem Ayarları → Gizlilik ve Güvenlik**'i aç, aşağı kaydır, "Sever VideoGrabber engellendi" yazısının yanındaki **Yine de Aç**'a bas ve onayla.
+4. Bundan sonra normal bir uygulama gibi açılır. İlk indirmede *İndirilenler* klasörüne erişim izni sorarsa **İzin Ver** de.
+
+<details>
+<summary>Terminal biliyorsan (tek komut)</summary>
+
+```bash
+xattr -dr com.apple.quarantine "/Applications/Sever VideoGrabber.app"
+```
+
+Komut satırı kullanımı: `"/Applications/Sever VideoGrabber.app/Contents/MacOS/Sever VideoGrabber" https://...`
+</details>
 
 ### Seçenek 2 — pip / pipx / uv (Python 3.10+)
 

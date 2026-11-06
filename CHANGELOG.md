@@ -2,6 +2,17 @@
 
 Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/), sürümleme [SemVer](https://semver.org/lang/tr/) kurallarına uyar.
 
+## [3.2.0] — 2026-11-06
+
+### Eklenenler
+- 🍎 **Gerçek macOS uygulaması** (`Sever VideoGrabber.app`): zip'i aç, Uygulamalar'a sürükle, çift tıkla.
+  Terminal veya `chmod` gerekmez. Apple Silicon ve **Intel** Mac'ler için ayrı paketler.
+- Release sırasında Windows ve macOS'ta pencerenin otomatik açılış testi (`videograbber gui --selftest`)
+- README'ye Mac ilk açılış rehberi
+
+### Değişenler
+- macOS dosyaları artık `SeverVideoGrabber-macos-*.zip` adıyla yayınlanıyor (eski `videograbber-macos-arm64` yerine)
+
 ## [3.1.0] — 2026-11-06
 
 ### Eklenenler
@@ -34,5 +45,6 @@ Biçim [Keep a Changelog](https://keepachangelog.com/tr-TR/1.1.0/), sürümleme 
 - ffmpeg ve deno (JS motoru) pakete dahil — ek kurulum yok
 - Windows / macOS / Linux için tek dosyalık programlar (GitHub Releases)
 
+[3.2.0]: https://github.com/yusufkrk/sever-videograbber/releases/tag/v3.2.0
 [3.1.0]: https://github.com/yusufkrk/sever-videograbber/releases/tag/v3.1.0
 [3.0.0]: https://github.com/yusufkrk/sever-videograbber/releases/tag/v3.0.0

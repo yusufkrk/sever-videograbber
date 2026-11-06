@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import platform as _platform
 import sys
 import time
@@ -508,14 +507,6 @@ def cmd_doctor(args: argparse.Namespace, conf: dict[str, Any]) -> int:
         table.add_row("✅", "GUI: pywebview", _pkg_version("pywebview"), "")
     except Exception:
         table.add_row("ℹ️", "GUI: pywebview", "—", t("doctor_gui_browser"))
-    gui_failed = False
-    if os.environ.get("CI") == "true" and getattr(sys, "frozen", False) and sys.platform == "win32":
-        # GitHub Actions'ta derlenen Windows exe'sinde pencereyi gerçekten açıp dener.
-        from .gui import selftest
-
-        ok, msg = selftest()
-        gui_failed = not ok
-        table.add_row("✅" if ok else "❌", "GUI selftest", "", escape(msg))
     table.add_row("📄", "config", "✓" if config_file.exists() else "—", escape(str(config_file)))
     try:
         out_dir = build_options(
@@ -534,8 +525,6 @@ def cmd_doctor(args: argparse.Namespace, conf: dict[str, Any]) -> int:
         console.print(f"[yellow]⚠ {t('doctor_missing_js')}[/]")
     if not ytdlp_ok:
         console.print("[yellow]⚠ yt-dlp:[/] pip install -U yt-dlp")
-    if gui_failed:
-        problems += 1
     if not problems:
         console.print(f"[green]✔ {t('doctor_ok')}[/]")
     return EXIT_OK if not problems else EXIT_FAIL
