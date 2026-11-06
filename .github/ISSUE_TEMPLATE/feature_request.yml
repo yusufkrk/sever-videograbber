@@ -1,0 +1,15 @@
+name: ✨ Özellik isteği / Feature request
+description: Yeni bir özellik veya iyileştirme öner.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Öneri / Idea
+      description: Ne istiyorsun ve hangi problemi çözüyor?
+    validations:
+      required: true
+  - type: textarea
+    id: alt
+    attributes:
+      label: Alternatifler / Alternatives
