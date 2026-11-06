@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/icon.png" width="96" alt="">
+<img src="docs/images/icon.png" width="96" alt="">
 
 # Sever VideoGrabber v3.1
 
@@ -16,7 +16,7 @@
 
 </div>
 
-<p align="center"><img src="assets/screenshot.png" width="820" alt="Sever VideoGrabber penceresi"></p>
+<p align="center"><img src="docs/images/screenshot.png" width="820" alt="Sever VideoGrabber penceresi"></p>
 
 ## 🚀 Hızlı başlangıç
 

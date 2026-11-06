@@ -47,7 +47,7 @@ def main() -> None:
             args += ["--collect-all=pythonnet", "--collect-all=clr_loader"]
     except ImportError:
         print("! pywebview yok — exe arayüzü tarayıcıda açacak", file=sys.stderr)
-    icon = ROOT / "assets" / "icon.ico"
+    icon = ROOT / "docs" / "images" / "icon.ico"
     if icon.exists() and platform.system() == "Windows":
         args.append(f"--icon={icon}")
 
